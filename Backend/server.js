@@ -19,13 +19,13 @@ connectDB();
 
 // CORS (FINAL WORKING)
 app.use(
-cors({
-origin: [
-"http://localhost:5173",
-"https://careerlens-eta.vercel.app"
-],
-credentials: true,
-})
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://careerlens-omega.vercel.app"
+    ],
+    credentials: true,
+  })
 );
 
 // Body parsers
