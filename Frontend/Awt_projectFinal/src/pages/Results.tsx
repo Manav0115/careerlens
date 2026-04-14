@@ -8,7 +8,7 @@ import SuggestionItem from '../components/results/SuggestionItem'
 import SkillBar from '../components/dashboard/SkillBar'
 import { useAnalysis } from '../context/AnalysisContext'
 import { getSuggestions, CATEGORY_MAP } from '../utils/roleSkills'
-import { getScoreColor } from '../utils/helpers'
+
 import '../assets/css/global.css'
 import '../assets/css/dashboard.css'
 import '../assets/css/results.css'
