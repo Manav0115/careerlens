@@ -50,6 +50,9 @@ app.use((err, _req, res, _next) => {
   console.error("Unhandled error:", err.message);
   res.status(500).json({ msg: "Internal server error" });
 });
+app.get("/", (req, res) => {
+  res.send("CareerLens API is running 🚀");
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
