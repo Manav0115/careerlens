@@ -8,53 +8,55 @@ const connectDB = require("./config/db");
 
 const app = express();
 
-// Ensure uploads directory exists on startup
+// Ensure uploads folder exists
 const uploadDir = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// Connect to MongoDB
+// Connect DB
 connectDB();
 
-// CORS — allow the React dev server
+// CORS (FINAL WORKING)
 app.use(
-  cors({
-    origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
+cors({
+origin: [
+"http://localhost:5173",
+"https://careerlens-eta.vercel.app"
+],
+credentials: true,
+})
 );
 
 // Body parsers
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Static uploads
+app.use("/uploads", express.static(uploadDir));
 
 // Routes
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api", require("./routes/analysisRoutes"));
 
-// Health check
-app.get("/", (_req, res) => {
-  res.json({ status: "ok", message: "CareerLens API running" });
+// Root route
+app.get("/", (req, res) => {
+res.send("CareerLens API is running 🚀");
 });
 
 // 404 handler
-app.use((_req, res) => {
-  res.status(404).json({ msg: "Route not found" });
+app.use((req, res) => {
+res.status(404).json({ msg: "Route not found" });
 });
 
-// Global error handler
-app.use((err, _req, res, _next) => {
-  console.error("Unhandled error:", err.message);
-  res.status(500).json({ msg: "Internal server error" });
-});
-app.get("/", (req, res) => {
-  res.send("CareerLens API is running 🚀");
+// Error handler
+app.use((err, req, res, next) => {
+console.error(err.message);
+res.status(500).json({ msg: "Server error" });
 });
 
+// Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server started at http://localhost:${PORT}`);
+console.log(`Server running on port ${PORT}`);
 });
