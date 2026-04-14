@@ -1,0 +1,152 @@
+/* ============================================================
+   CareerLens — Careers Page CSS
+   ============================================================ */
+
+.ca-best-card {
+  background: rgba(127,119,221,0.07);
+  border: 1px solid rgba(127,119,221,0.25);
+  border-radius: var(--radius-xl);
+  padding: 24px 28px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.ca-best-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(127,119,221,0.6), transparent);
+}
+.ca-best-label {
+  font-size: 10px;
+  color: var(--purple);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.ca-best-role {
+  font-family: var(--font-heading);
+  font-size: 22px; font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.ca-best-score {
+  font-family: var(--font-heading);
+  font-size: 18px; font-weight: 700;
+  color: var(--purple-light);
+  margin-bottom: 8px;
+}
+.ca-best-desc {
+  font-size: 13px; color: var(--text-muted);
+  margin-bottom: 12px; line-height: 1.6;
+}
+.ca-best-chips {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.ca-best-chips span {
+  font-size: 12px; padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(29,158,117,0.1);
+  color: #1D9E75;
+  border: 1px solid rgba(29,158,117,0.2);
+}
+
+.ca-role-row {
+  display: grid;
+  grid-template-columns: 32px 32px 1fr 180px 52px;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid #141420;
+}
+.ca-role-row:last-child { border-bottom: none; }
+.ca-rank {
+  font-size: 11px;
+  color: var(--text-faint);
+  font-weight: 600;
+}
+.ca-role-icon-sm { font-size: 18px; }
+.ca-role-name {
+  font-size: 13px; font-weight: 500;
+  color: var(--text-primary);
+}
+.ca-role-salary { font-size: 11px; color: var(--text-muted); }
+.ca-role-bar-wrap {
+  height: 4px;
+  background: var(--bg-border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.ca-role-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 1.2s ease;
+}
+.ca-role-score {
+  font-family: var(--font-heading);
+  font-weight: 700; font-size: 13px;
+  text-align: right;
+}
+
+.ca-roadmap-item {
+  display: flex; gap: 14px; padding: 12px 0;
+  border-bottom: 1px solid #141420;
+}
+.ca-roadmap-item:last-child { border-bottom: none; }
+.ca-roadmap-left {
+  display: flex; flex-direction: column;
+  align-items: center; flex-shrink: 0;
+}
+.ca-roadmap-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--purple);
+  flex-shrink: 0;
+}
+.ca-roadmap-line {
+  width: 1px; flex: 1;
+  background: var(--bg-border);
+  margin-top: 4px; min-height: 20px;
+}
+.ca-roadmap-content { flex: 1; }
+.ca-roadmap-title {
+  font-size: 13px; font-weight: 500;
+  color: var(--text-primary); margin-bottom: 3px;
+}
+.ca-roadmap-desc {
+  font-size: 12px; color: var(--text-muted);
+  line-height: 1.55;
+}
+.ca-roadmap-time {
+  display: inline-block; font-size: 10px;
+  padding: 2px 8px; border-radius: 20px;
+  background: rgba(127,119,221,0.1);
+  color: var(--purple-light);
+  border: 1px solid rgba(127,119,221,0.2);
+  margin-top: 5px;
+}
+
+/* Resource items for Skills page */
+.in-resource-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 0; border-bottom: 1px solid #141420;
+}
+.in-resource-item:last-child { border-bottom: none; }
+.in-resource-icon { font-size: 18px; flex-shrink: 0; }
+.in-resource-info { flex: 1; min-width: 0; }
+.in-resource-title {
+  font-size: 13px; font-weight: 500;
+  color: var(--text-primary); margin-bottom: 2px;
+}
+.in-resource-url {
+  font-size: 11px; color: var(--purple);
+  white-space: nowrap; overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 768px) {
+  .ca-role-row {
+    grid-template-columns: 24px 24px 1fr 40px;
+  }
+  .ca-role-bar-wrap { display: none; }
+}

@@ -1,0 +1,766 @@
+# CareerLens — React + TypeScript Version
+
+> AI-Powered Job-Specific Resume Analysis System
+> Built with React, TypeScript, Vite, React Router DOM
+> Subject: Advanced Web Technology (01CE1412) — Marwadi University B.Tech CE Year II
+
+---
+
+## Should I create a new folder?
+
+**YES — 100% start fresh in a new folder.**
+
+Do NOT mix the React version inside the old HTML/CSS project.
+Keep them completely separate.
+
+```
+your-projects/
+├── careerlens/              ← OLD project (keep this, it works)
+│   ├── pages/
+│   ├── css/
+│   ├── js/
+│   └── README.md
+│
+└── careerlens-react/        ← NEW project (React version, start here)
+    ├── src/
+    ├── public/
+    ├── package.json
+    └── README.md            ← this file
+```
+
+The old HTML project is your reference. The new React project is
+your submission. Both can live side by side.
+
+---
+
+## Table of Contents
+
+1. [Tech Stack](#1-tech-stack)
+2. [What Changes in React vs Plain HTML](#2-what-changes-in-react-vs-plain-html)
+3. [Complete Folder Structure](#3-complete-folder-structure)
+4. [Every File Explained](#4-every-file-explained)
+5. [How Routing Works](#5-how-routing-works)
+6. [How State Works](#6-how-state-works)
+7. [How CSS Works](#7-how-css-works)
+8. [TypeScript Types Used](#8-typescript-types-used)
+9. [All Pages and Components](#9-all-pages-and-components)
+10. [Phase-by-Phase Build Plan](#10-phase-by-phase-build-plan)
+11. [Setup Commands](#11-setup-commands)
+12. [How to Run](#12-how-to-run)
+13. [Syllabus Coverage](#13-syllabus-coverage)
+
+---
+
+## 1. Tech Stack
+
+| Layer          | Technology           | Why                                      |
+|----------------|----------------------|------------------------------------------|
+| UI Framework   | React 18             | Required by syllabus                     |
+| Language       | TypeScript           | Required by syllabus — type safety       |
+| Build Tool     | Vite                 | Fastest, modern — replaces Create React App |
+| Routing        | React Router DOM v6  | Industry standard for React routing      |
+| State          | React Context API    | Syllabus requires Context API            |
+| Styling        | Our existing CSS     | Zero restyling — same dark purple theme  |
+| Charts         | Chart.js             | Same as HTML version                     |
+| HTTP Calls     | Fetch API / Axios    | Connect to backend when ready            |
+| Deploy         | Netlify              | Free, one-click from GitHub              |
+
+---
+
+## 2. What Changes in React vs Plain HTML
+
+This is the most important section to understand before starting.
+
+### The core idea
+
+In plain HTML, every page is a separate file.
+In React, there is ONE html file and ONE JavaScript app.
+React swaps out what you see on screen by showing/hiding components.
+No page reloads. No separate files per page.
+
+### Side by side comparison
+
+```
+PLAIN HTML WAY                    REACT WAY
+─────────────────────────────────────────────────────────────
+18 separate .html files      →   18 page components in src/pages/
+<script src="auth.js">       →   import { useAuth } from '../context/AuthContext'
+window.location.href =       →   const navigate = useNavigate()
+  'dashboard.html'                navigate('/dashboard')
+document.getElementById()   →   const [value, setValue] = useState('')
+onclick="handleLogin()"      →   onClick={handleLogin}
+sessionStorage for state     →   React Context API
+Manual DOM manipulation      →   State change = React re-renders automatically
+Separate CSS per page        →   Import CSS at top of component file
+```
+
+### Real example — Login form
+
+```html
+<!-- OLD WAY (plain HTML) -->
+<input id="loginEmail" type="email" />
+<button onclick="handleLogin()">Login</button>
+<script>
+  function handleLogin() {
+    const email = document.getElementById('loginEmail').value;
+  }
+</script>
+```
+
+```tsx
+// NEW WAY (React + TypeScript)
+const [email, setEmail] = useState<string>('');
+
+function handleLogin() {
+  console.log(email); // already has the value via state
+}
+
+return (
+  <input
+    type="email"
+    value={email}
+    onChange={(e) => setEmail(e.target.value)}
+  />
+  <button onClick={handleLogin}>Login</button>
+);
+```
+
+---
+
+## 3. Complete Folder Structure
+
+```
+careerlens-react/
+│
+├── public/
+│   └── favicon.ico
+│
+├── src/
+│   │
+│   ├── assets/
+│   │   └── css/
+│   │       ├── global.css          ← COPY from old project (unchanged)
+│   │       ├── landing.css         ← COPY from old project (unchanged)
+│   │       ├── auth.css            ← COPY from old project (unchanged)
+│   │       ├── dashboard.css       ← COPY from old project (unchanged)
+│   │       ├── analyse.css         ← COPY from old project (unchanged)
+│   │       ├── results.css         ← COPY from old project (unchanged)
+│   │       ├── inner.css           ← COPY from old project (unchanged)
+│   │       └── settings.css        ← COPY from old project (unchanged)
+│   │
+│   ├── context/
+│   │   ├── AuthContext.tsx         ← Replaces js/auth.js
+│   │   └── AnalysisContext.tsx     ← Replaces sessionStorage for analysis data
+│   │
+│   ├── components/
+│   │   │
+│   │   ├── shared/
+│   │   │   ├── Navbar.tsx          ← Landing page top navbar
+│   │   │   ├── Sidebar.tsx         ← Dashboard left sidebar
+│   │   │   ├── Topbar.tsx          ← Dashboard top bar with avatar + bell
+│   │   │   ├── Footer.tsx          ← Landing page footer
+│   │   │   └── ProtectedRoute.tsx  ← Redirects to /login if not logged in
+│   │   │
+│   │   ├── dashboard/
+│   │   │   ├── StatCard.tsx        ← The 4 stat cards (score, analyses etc.)
+│   │   │   ├── ScoreRing.tsx       ← Animated SVG score ring
+│   │   │   ├── SkillBar.tsx        ← Individual skill progress bar
+│   │   │   └── ScoreChart.tsx      ← Chart.js line chart
+│   │   │
+│   │   ├── analyse/
+│   │   │   ├── RoleCard.tsx        ← Individual job role selection card
+│   │   │   ├── StepBar.tsx         ← Step progress bar (1 → 2 → 3 → 4)
+│   │   │   └── UploadZone.tsx      ← Drag and drop file upload area
+│   │   │
+│   │   └── results/
+│   │       ├── SkillTag.tsx        ← Green/red skill tag pill
+│   │       └── SuggestionItem.tsx  ← AI suggestion with priority badge
+│   │
+│   ├── pages/
+│   │   ├── Landing.tsx             ← index.html
+│   │   ├── Login.tsx               ← login.html
+│   │   ├── Register.tsx            ← register.html
+│   │   ├── ForgotPassword.tsx      ← forgot.html
+│   │   ├── Dashboard.tsx           ← dashboard.html
+│   │   ├── Analyse.tsx             ← analyse.html (role selection)
+│   │   ├── Upload.tsx              ← upload.html
+│   │   ├── LoadingScreen.tsx       ← loading.html
+│   │   ├── Results.tsx             ← results.html
+│   │   ├── Insights.tsx            ← insights.html
+│   │   ├── Skills.tsx              ← skills.html
+│   │   ├── Careers.tsx             ← careers.html
+│   │   ├── History.tsx             ← history.html
+│   │   ├── Profile.tsx             ← profile.html
+│   │   ├── Settings.tsx            ← settings.html
+│   │   ├── Notifications.tsx       ← notifications.html
+│   │   ├── Terms.tsx               ← terms.html
+│   │   └── NotFound.tsx            ← 404.html
+│   │
+│   ├── types/
+│   │   └── index.ts                ← All TypeScript interfaces and types
+│   │
+│   ├── utils/
+│   │   ├── roleSkills.ts           ← Job role skill database
+│   │   └── helpers.ts              ← getInitials, formatBytes, formatDate
+│   │
+│   ├── App.tsx                     ← All routes defined here
+│   ├── main.tsx                    ← Entry point — renders App into DOM
+│   └── vite-env.d.ts               ← Vite TypeScript declarations
+│
+├── index.html                      ← Single HTML file (Vite entry)
+├── tsconfig.json                   ← TypeScript configuration
+├── vite.config.ts                  ← Vite build configuration
+└── package.json                    ← All dependencies
+```
+
+---
+
+## 4. Every File Explained
+
+### src/main.tsx
+The entry point. This is the first file that runs.
+It mounts the React app into the single `<div id="root">` in index.html.
+You never need to edit this file after setup.
+
+### src/App.tsx
+This is the router file. It lists every URL path and which page
+component to show for that path. This replaces having 18 separate
+HTML files. React Router reads the URL and shows the right component.
+
+### src/context/AuthContext.tsx
+This replaces our old `auth.js` file completely.
+It stores the logged-in user, the JWT token, and exposes
+login(), logout(), and register() functions to every component
+in the app without passing props around.
+
+### src/context/AnalysisContext.tsx
+Stores the current analysis data (role, score, matched, missing)
+so Results, Insights, Skills and Dashboard can all read it
+without fetching it multiple times.
+
+### src/components/shared/ProtectedRoute.tsx
+This replaces the `requireAuth()` function in our old auth.js.
+Wrap any page with this component and it automatically
+redirects to /login if the user is not logged in.
+
+### src/types/index.ts
+All TypeScript interfaces live here.
+Every piece of data has a defined shape — User, Analysis,
+Notification, Settings, RoleSkill etc.
+This is what satisfies the TypeScript requirement in the syllabus.
+
+### src/utils/roleSkills.ts
+The ROLE_SKILLS object from our old analyse.js — moved here
+as a typed TypeScript constant so all components can import it.
+
+---
+
+## 5. How Routing Works
+
+In plain HTML, URLs pointed to files:
+```
+/pages/dashboard.html
+/pages/results.html
+```
+
+In React Router, URLs point to components:
+```
+/dashboard     →  <Dashboard />
+/results       →  <Results />
+```
+
+All routes are defined in App.tsx:
+
+```tsx
+// App.tsx
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Public routes */}
+        <Route path="/"           element={<Landing />} />
+        <Route path="/login"      element={<Login />} />
+        <Route path="/register"   element={<Register />} />
+        <Route path="/forgot"     element={<ForgotPassword />} />
+        <Route path="/terms"      element={<Terms />} />
+
+        {/* Protected routes — redirect to /login if not logged in */}
+        <Route path="/dashboard"     element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/analyse"       element={<ProtectedRoute><Analyse /></ProtectedRoute>} />
+        <Route path="/upload"        element={<ProtectedRoute><Upload /></ProtectedRoute>} />
+        <Route path="/loading"       element={<ProtectedRoute><LoadingScreen /></ProtectedRoute>} />
+        <Route path="/results"       element={<ProtectedRoute><Results /></ProtectedRoute>} />
+        <Route path="/insights"      element={<ProtectedRoute><Insights /></ProtectedRoute>} />
+        <Route path="/skills"        element={<ProtectedRoute><Skills /></ProtectedRoute>} />
+        <Route path="/careers"       element={<ProtectedRoute><Careers /></ProtectedRoute>} />
+        <Route path="/history"       element={<ProtectedRoute><History /></ProtectedRoute>} />
+        <Route path="/profile"       element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/settings"      element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+        <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+
+        {/* 404 */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+```
+
+### Navigating between pages
+
+```tsx
+// OLD WAY
+window.location.href = 'dashboard.html';
+
+// NEW WAY
+import { useNavigate } from 'react-router-dom';
+const navigate = useNavigate();
+navigate('/dashboard');
+
+// For links
+import { Link } from 'react-router-dom';
+<Link to="/register">Create account</Link>
+```
+
+---
+
+## 6. How State Works
+
+### Local state — useState
+
+For data inside one component (form inputs, toggles, selections):
+
+```tsx
+// Form input
+const [email, setEmail] = useState<string>('');
+const [password, setPassword] = useState<string>('');
+
+// Selected role
+const [selectedRole, setSelectedRole] = useState<string | null>(null);
+
+// File upload
+const [file, setFile] = useState<File | null>(null);
+```
+
+### Global state — Context API
+
+For data shared across many pages (logged-in user, analysis result):
+
+```tsx
+// Any component can read the user
+const { user, login, logout } = useAuth();
+
+// Any component can read the analysis result
+const { results, setResults } = useAnalysis();
+```
+
+### How old JS patterns become React state
+
+```
+OLD: sessionStorage.getItem('cl_user')
+NEW: const { user } = useAuth();
+
+OLD: sessionStorage.setItem('cl_role', role)
+NEW: setSelectedRole(role)  in AnalysisContext
+
+OLD: document.getElementById('score').textContent = '72%'
+NEW: const [score, setScore] = useState(72)
+     <div>{score}%</div>
+```
+
+---
+
+## 7. How CSS Works
+
+**Good news — all 8 CSS files from the old project are reused exactly.**
+Zero changes to any CSS. Just copy them into src/assets/css/.
+
+Import CSS at the top of each page component that needs it:
+
+```tsx
+// Landing.tsx
+import '../assets/css/global.css';
+import '../assets/css/landing.css';
+
+// Dashboard.tsx
+import '../assets/css/global.css';
+import '../assets/css/dashboard.css';
+
+// Login.tsx
+import '../assets/css/global.css';
+import '../assets/css/auth.css';
+```
+
+All class names stay exactly the same:
+```tsx
+// OLD HTML
+<div class="db-stat-card fade-up delay-2">
+
+// NEW React (class → className in JSX)
+<div className="db-stat-card fade-up delay-2">
+```
+
+**Only one change: `class` becomes `className` in JSX.**
+That is the only difference in how CSS works.
+
+---
+
+## 8. TypeScript Types Used
+
+All types are defined in src/types/index.ts:
+
+```ts
+// User account
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+// Analysis result
+interface Analysis {
+  role: string;
+  score: number;
+  matched: string[];
+  missing: string[];
+  date: string;
+  fileName?: string;
+}
+
+// Auth context shape
+interface AuthContextType {
+  user: User | null;
+  token: string | null;
+  login: (email: string, password: string) => Promise<void>;
+  register: (name: string, email: string, password: string) => Promise<void>;
+  logout: () => void;
+  isAuthenticated: boolean;
+}
+
+// Analysis context shape
+interface AnalysisContextType {
+  selectedRole: string | null;
+  setSelectedRole: (role: string) => void;
+  selectedFile: File | null;
+  setSelectedFile: (file: File | null) => void;
+  results: Analysis | null;
+  setResults: (results: Analysis) => void;
+}
+
+// Job role card
+interface JobRole {
+  role: string;
+  icon: string;
+  desc: string;
+  skills: string[];
+  tags: string[];
+}
+
+// History item
+interface HistoryItem {
+  role: string;
+  score: number;
+  date: string;
+  matched: number;
+  missing: number;
+}
+
+// Notification
+interface Notification {
+  id: number;
+  type: 'analysis' | 'tips' | 'system';
+  title: string;
+  desc: string;
+  time: string;
+  read: boolean;
+}
+
+// Settings
+interface UserSettings {
+  notifAnalysis: boolean;
+  notifTips: boolean;
+  privHistory: boolean;
+  prefRole: string;
+}
+
+// Stat card props
+interface StatCardProps {
+  icon: string;
+  value: string | number;
+  label: string;
+  delta?: string;
+  deltaType?: 'up' | 'down';
+}
+```
+
+---
+
+## 9. All Pages and Components
+
+### Pages (18 total)
+
+| File | Route | Old HTML equivalent | CSS imported |
+|------|-------|---------------------|--------------|
+| Landing.tsx | / | index.html | global + landing |
+| Login.tsx | /login | login.html | global + auth |
+| Register.tsx | /register | register.html | global + auth |
+| ForgotPassword.tsx | /forgot | forgot.html | global + auth + settings |
+| Dashboard.tsx | /dashboard | dashboard.html | global + dashboard |
+| Analyse.tsx | /analyse | analyse.html | global + analyse |
+| Upload.tsx | /upload | upload.html | global + analyse |
+| LoadingScreen.tsx | /loading | loading.html | global + analyse |
+| Results.tsx | /results | results.html | global + results |
+| Insights.tsx | /insights | insights.html | global + dashboard + inner + settings |
+| Skills.tsx | /skills | skills.html | global + dashboard + inner |
+| Careers.tsx | /careers | careers.html | global + dashboard + inner |
+| History.tsx | /history | history.html | global + dashboard + inner |
+| Profile.tsx | /profile | profile.html | global + dashboard + inner |
+| Settings.tsx | /settings | settings.html | global + dashboard + inner + settings |
+| Notifications.tsx | /notifications | notifications.html | global + dashboard + inner + settings |
+| Terms.tsx | /terms | terms.html | global + settings |
+| NotFound.tsx | * | 404.html | global + settings |
+
+### Shared Components (5)
+
+| File | What it does |
+|------|-------------|
+| Navbar.tsx | Top navbar shown on Landing, Login, Register pages |
+| Sidebar.tsx | Left sidebar shown on all dashboard pages |
+| Topbar.tsx | Top bar on dashboard pages with bell, settings, avatar |
+| Footer.tsx | Footer on Landing and Terms pages |
+| ProtectedRoute.tsx | Wraps protected pages, redirects if not logged in |
+
+### Dashboard Components (4)
+
+| File | What it does |
+|------|-------------|
+| StatCard.tsx | Single stat card (score, analyses count etc.) |
+| ScoreRing.tsx | Animated SVG circular score ring |
+| SkillBar.tsx | Single skill category progress bar |
+| ScoreChart.tsx | Chart.js line chart for score history |
+
+### Analyse Components (3)
+
+| File | What it does |
+|------|-------------|
+| RoleCard.tsx | Single job role selection card with skills preview |
+| StepBar.tsx | 4-step progress indicator (Select → Upload → Loading → Results) |
+| UploadZone.tsx | Drag and drop file upload zone with validation |
+
+### Results Components (2)
+
+| File | What it does |
+|------|-------------|
+| SkillTag.tsx | Single skill tag (green = matched, red = missing) |
+| SuggestionItem.tsx | Single AI suggestion with icon and priority pill |
+
+---
+
+## 10. Phase-by-Phase Build Plan
+
+### Phase 1 — Setup (Day 1)
+- Create new folder careerlens-react
+- Run Vite setup command with React + TypeScript template
+- Install React Router DOM
+- Copy all 8 CSS files into src/assets/css/
+- Set up tsconfig.json
+- Confirm blank app runs on localhost:5173
+
+### Phase 2 — Types and Context (Day 1)
+- Create src/types/index.ts with all interfaces
+- Create src/context/AuthContext.tsx
+- Create src/context/AnalysisContext.tsx
+- Create src/utils/roleSkills.ts
+- Create src/utils/helpers.ts
+
+### Phase 3 — Shared Components (Day 2)
+- Build Navbar.tsx
+- Build Sidebar.tsx
+- Build Topbar.tsx
+- Build Footer.tsx
+- Build ProtectedRoute.tsx
+- Set up App.tsx with all routes
+
+### Phase 4 — Auth Pages (Day 2-3)
+- Build Login.tsx
+- Build Register.tsx
+- Build ForgotPassword.tsx
+- Wire up AuthContext login and register functions
+- Test: login works, token stored, redirect to dashboard
+
+### Phase 5 — Landing Page (Day 3)
+- Build Landing.tsx with all sections
+- Hero, preview card, stats, steps, features, footer
+
+### Phase 6 — Dashboard (Day 4)
+- Build StatCard.tsx, ScoreRing.tsx, SkillBar.tsx, ScoreChart.tsx
+- Build Dashboard.tsx using all components
+- Test: shows correctly after login
+
+### Phase 7 — Analyse Flow (Day 5-6)
+- Build RoleCard.tsx, StepBar.tsx, UploadZone.tsx
+- Build Analyse.tsx (role selection)
+- Build Upload.tsx (file upload)
+- Build LoadingScreen.tsx (animated progress)
+- Build Results.tsx with SkillTag and SuggestionItem
+- Test: full flow works end to end
+
+### Phase 8 — Inner Pages (Day 7)
+- Build Insights.tsx
+- Build Skills.tsx
+- Build Careers.tsx
+- Build History.tsx
+
+### Phase 9 — Account Pages (Day 8)
+- Build Profile.tsx
+- Build Settings.tsx
+- Build Notifications.tsx
+
+### Phase 10 — Extra Pages (Day 8)
+- Build Terms.tsx
+- Build NotFound.tsx
+
+### Phase 11 — Polish and Deploy (Day 9)
+- Fix any routing or state bugs
+- Test every page and flow
+- Deploy to Netlify
+
+---
+
+## 11. Setup Commands
+
+Run these commands in order to create the project:
+
+```bash
+# Step 1 — Create a new React + TypeScript project using Vite
+npm create vite@latest careerlens-react -- --template react-ts
+
+# Step 2 — Go into the new folder
+cd careerlens-react
+
+# Step 3 — Install dependencies
+npm install
+
+# Step 4 — Install React Router DOM for page routing
+npm install react-router-dom
+
+# Step 5 — Install type definitions for React Router
+npm install --save-dev @types/react-router-dom
+
+# Step 6 — Install Chart.js for score progression chart
+npm install chart.js react-chartjs-2
+
+# Step 7 — Start the development server
+npm run dev
+
+# App will be running at: http://localhost:5173
+```
+
+### Folder and file setup after installation
+
+```bash
+# Delete the default Vite starter files you don't need
+# (do this manually in VS Code)
+# Delete: src/App.css
+# Delete: src/index.css
+# Delete: src/assets/react.svg
+# Delete: public/vite.svg
+
+# Create the folder structure
+mkdir -p src/assets/css
+mkdir -p src/context
+mkdir -p src/components/shared
+mkdir -p src/components/dashboard
+mkdir -p src/components/analyse
+mkdir -p src/components/results
+mkdir -p src/pages
+mkdir -p src/types
+mkdir -p src/utils
+
+# Then copy all 8 CSS files from the old project
+# into src/assets/css/
+```
+
+---
+
+## 12. How to Run
+
+```bash
+# Development
+npm run dev
+# Opens at http://localhost:5173
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+### Deploy to Netlify
+
+```
+1. Push the project to GitHub
+2. Go to netlify.com and click "Add new site"
+3. Connect your GitHub repository
+4. Set build command:  npm run build
+5. Set publish directory:  dist
+6. Click Deploy
+```
+
+---
+
+## 13. Syllabus Coverage
+
+This project satisfies every practical in the AWT syllabus (01CE1412):
+
+| Practical | Requirement | How CareerLens covers it |
+|-----------|-------------|--------------------------|
+| 1 | ES6+ syntax + TypeScript typing | All components use TypeScript interfaces and types |
+| 2 | async/await + Promises + API calls | AI analysis fetch call, resume upload API |
+| 3 | Multi-component React with props and state | Dashboard, Results, Skills — all use components |
+| 4 | React form + validation + controlled components | Login, Register, Upload forms with useState |
+| 5 | Routing + Context API state management | React Router + AuthContext + AnalysisContext |
+| 6 | CRUD REST API backend | All 15 endpoints (Node.js + Express) |
+| 7 | JWT auth + middleware | Login, ProtectedRoute, AuthContext |
+| 8 | Real-time Socket.io | Loading screen progress events |
+| 9 | TypeScript interfaces + generics | src/types/index.ts — all data typed |
+| 10 | Node.js + Express + TypeScript backend | Backend project in TypeScript |
+| 11 | SSR / performance (Next.js equiv.) | Code splitting via React Router lazy loading |
+| 12 | Frontend + backend integration | All pages connected to backend API |
+| 13 | Deploy to Vercel/Render | Netlify frontend + Railway backend |
+| 14 | Mini full-stack project — React, Node, TypeScript | CareerLens is exactly this |
+
+---
+
+## Demo Credentials
+
+| Field    | Value              |
+|----------|--------------------|
+| Email    | demo@careerlens.in |
+| Password | Demo@1234          |
+
+---
+
+## Key Differences: Old Project vs React Project
+
+| Topic | Old HTML Project | New React Project |
+|-------|-----------------|-------------------|
+| Language | HTML + JS | TypeScript (TSX) |
+| Pages | 18 .html files | 18 .tsx components |
+| Routing | Browser file paths | React Router DOM |
+| State | sessionStorage + DOM | useState + Context |
+| Auth guard | requireAuth() in every JS file | ProtectedRoute component |
+| CSS | Linked in each HTML head | Imported in each component |
+| Forms | document.getElementById | useState controlled inputs |
+| Navigation | window.location.href | useNavigate() hook |
+| Reusable UI | Copy-paste HTML blocks | Reusable components |
+| Type safety | None | Full TypeScript |
+
+---
+
+*CareerLens React Version © 2026*
+*Advanced Web Technology — 01CE1412 — Marwadi University*
+*B.Tech Computer Engineering Year II*
